@@ -1,16 +1,17 @@
-import { PageContainer } from "./components/PageContainer";
-import { PageContents } from "./components/PageContents";
+import React from "react";
 import { GraphProvider } from "./components/GraphProvider";
-import { ModeToggle } from "./components/ModeToggle";
-import { TargetWord } from "./components/TargetWord";
-import { DailyTargetPanel } from "./components/DailyTargetPanel";
+import { Header, type GameMode } from "./components/Header";
+import { StatusStripDaily } from "./components/StatusStripDaily";
+import { StatusStripFreePlay } from "./components/StatusStripFreePlay";
+import { Graph } from "./components/Graph";
+import { InputBar } from "./components/InputBar";
+import { VictoryPanelDaily } from "./components/VictoryPanelDaily";
+import { HelpFab } from "./components/HelpFab";
 import {
   useLocalStorage,
   migrateLegacyFreePlayKeys,
 } from "./utilities/useLocalStorage";
 import { getLocalDateString } from "./utilities/dailyTarget";
-
-type GameMode = "daily" | "freeplay";
 
 migrateLegacyFreePlayKeys();
 
@@ -36,15 +37,22 @@ const App = () => {
   const today = getLocalDateString();
 
   return (
-    <PageContainer>
-      <ModeToggle mode={mode} setMode={setMode} />
+    <div className="wj-app">
+      <Header mode={mode} setMode={setMode} />
       {mode === "daily" ? (
         <GraphProvider
           keyPrefix={`daily:${today}`}
           initialGraph={dailyInitialGraph}
           initialSelectedWord="a"
         >
-          <PageContents targetPanel={<DailyTargetPanel />} />
+          <StatusStripDaily />
+          <main className="wj-graph">
+            <div className="wj-graph__inner">
+              <Graph />
+            </div>
+          </main>
+          <VictoryPanelDaily />
+          <InputBar />
         </GraphProvider>
       ) : (
         <GraphProvider
@@ -52,10 +60,17 @@ const App = () => {
           initialGraph={freeplayInitialGraph}
           initialSelectedWord="art"
         >
-          <PageContents targetPanel={<TargetWord />} />
+          <StatusStripFreePlay />
+          <main className="wj-graph">
+            <div className="wj-graph__inner">
+              <Graph />
+            </div>
+          </main>
+          <InputBar />
         </GraphProvider>
       )}
-    </PageContainer>
+      <HelpFab />
+    </div>
   );
 };
 

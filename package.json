@@ -12,12 +12,13 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@material-ui/core": "^4.12.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-graph-vis": "^1.0.7"
   },
   "devDependencies": {
+    "@types/react": "^17",
+    "@types/react-dom": "^17",
     "@vitejs/plugin-react": "^4.3.0",
     "an-array-of-english-words": "^2.0.0",
     "gh-pages": "^6.1.0",
