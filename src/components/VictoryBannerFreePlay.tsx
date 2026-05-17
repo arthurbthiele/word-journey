@@ -13,6 +13,11 @@ export type FreePlayHit = {
    * puzzle the difficulty-N pick implicitly set.
    */
   qualifyingPath: string[] | null;
+  /**
+   * Optional celebratory message: set when this hit cleared the last
+   * available target at the current difficulty.
+   */
+  milestone?: string;
 };
 
 type VictoryBannerFreePlayProps = {
@@ -60,7 +65,13 @@ export const VictoryBannerFreePlay = ({
           <div className="wj-victory__title">
             Reached {hit.target} in {userMoves}{" "}
             {userMoves === 1 ? "move" : "moves"}
+            {hit.milestone ? " — congrats!" : ""}
           </div>
+          {hit.milestone && (
+            <div className="wj-victory__subtitle wj-victory__milestone">
+              🎉 {hit.milestone}
+            </div>
+          )}
         </div>
       </div>
 

@@ -56,6 +56,14 @@ export const InputBar = ({ targetReminder }: InputBarProps) => {
     const newNode = { id: trimmed, label: trimmed };
     const newEdge = { from: selectedWord, to: trimmed };
     const existingParents = graph.parents ?? {};
+    const nodeAlreadyExists = graph.nodes.some(
+      (node: { id: string }) => node.id === trimmed
+    );
+    // Don't append a duplicate node; vis-network rejects duplicate ids. We
+    // still add the edge, which is how the closed-loop feature works.
+    const nextNodes = nodeAlreadyExists
+      ? graph.nodes
+      : [...graph.nodes, newNode];
     // Only record a parent the first time a word is added — second-time
     // additions (closed-loop edges) shouldn't overwrite the word's history.
     const nextParents =
@@ -63,7 +71,7 @@ export const InputBar = ({ targetReminder }: InputBarProps) => {
         ? existingParents
         : { ...existingParents, [trimmed]: selectedWord };
     setGraph({
-      nodes: [...graph.nodes, newNode],
+      nodes: nextNodes,
       edges: [...graph.edges, newEdge],
       parents: nextParents,
     });

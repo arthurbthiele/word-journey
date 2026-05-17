@@ -467,6 +467,10 @@ button {
   font-size: var(--text-sm);
   color: var(--color-ink-muted);
 }
+.wj-victory__milestone {
+  color: var(--color-accent);
+  font-weight: 600;
+}
 .wj-victory__path {
   display: flex;
   flex-wrap: wrap;

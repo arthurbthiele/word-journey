@@ -1,9 +1,28 @@
 import GraphVis from "react-graph-vis";
-import React, { useState, useContext, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useContext,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
 import { GraphContext } from "./GraphProvider";
 
 export const Graph = () => {
   const { selectedWord, setSelectedWord, graph } = useContext(GraphContext);
+
+  // vis-network rejects duplicate node ids. Older saved graphs may have
+  // duplicate entries from the closed-loop feature; dedupe defensively.
+  const safeGraph = useMemo(() => {
+    const seen = new Set();
+    const nodes = [];
+    for (const node of graph.nodes) {
+      if (seen.has(node.id)) continue;
+      seen.add(node.id);
+      nodes.push(node);
+    }
+    return { nodes, edges: graph.edges };
+  }, [graph]);
 
   const [network, setNetwork] = useState();
   const containerRef = useRef(null);
@@ -81,11 +100,11 @@ export const Graph = () => {
       style={{ height: "100%", width: "100%", position: "relative" }}
     >
       <GraphVis
-        graph={graph}
+        graph={safeGraph}
         options={options}
         events={events}
         getNetwork={setNetwork}
-        id={graph.edges.length}
+        id={safeGraph.edges.length}
       />
     </div>
   );

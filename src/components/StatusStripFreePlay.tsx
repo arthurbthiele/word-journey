@@ -50,7 +50,7 @@ export const StatusStripFreePlay = ({
   const isTrivialPlural = (word: string) =>
     word.endsWith("s") && legitimateWords.has(word.slice(0, -1));
 
-  const pickNewTarget = (level: number) => {
+  const pickNewTarget = (level: number): boolean => {
     const candidates = Object.keys(depthsRef.current).filter(
       (word) =>
         depthsRef.current[word] === level &&
@@ -60,7 +60,7 @@ export const StatusStripFreePlay = ({
     if (candidates.length === 0) {
       setTarget(null);
       setQualifyingPath(null);
-      return;
+      return false;
     }
     const chosen = candidates[Math.floor(Math.random() * candidates.length)];
     // Capture the puzzle that was implicitly set: the shortest path from any
@@ -72,6 +72,7 @@ export const StatusStripFreePlay = ({
     );
     setTarget(chosen);
     setQualifyingPath(qPath);
+    return true;
   };
 
   // Initial target on first ever load.
@@ -85,7 +86,7 @@ export const StatusStripFreePlay = ({
     if (target) logTargetPaths("free-play", target);
   }, [target]);
 
-  // Credit when target reached; fire the victory modal and pick next.
+  // Credit when target reached; fire the victory banner and pick next.
   useEffect(() => {
     if (!target) return;
     const reached = graph.nodes.some(
@@ -95,12 +96,16 @@ export const StatusStripFreePlay = ({
       const userPath = findUserPath(graph.parents, "a", target);
       setLastScored(target);
       setScore((previousScore) => previousScore + difficulty ** 2);
+      const foundNext = pickNewTarget(difficulty);
+      const milestone = foundNext
+        ? undefined
+        : `You've reached every legitimate word at difficulty ${difficulty}! Try a higher level.`;
       onTargetHit({
         target,
         userPath: userPath ?? [target],
         qualifyingPath,
+        milestone,
       });
-      pickNewTarget(difficulty);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [graph.nodes, target, lastScored, difficulty]);
