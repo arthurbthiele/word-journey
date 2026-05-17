@@ -99,7 +99,7 @@ export const StatusStripFreePlay = ({
       const foundNext = pickNewTarget(difficulty);
       const milestone = foundNext
         ? undefined
-        : `You've reached every legitimate word at difficulty ${difficulty}! Try a higher level.`;
+        : `You've reached every legitimate word at difficulty ${difficulty}. Try a different difficulty!`;
       onTargetHit({
         target,
         userPath: userPath ?? [target],

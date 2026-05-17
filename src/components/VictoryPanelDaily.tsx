@@ -78,7 +78,7 @@ export const VictoryPanelDaily = ({
         : optimalMoves !== null
           ? ` (common-word optimal: ${optimalMoves})`
           : "";
-    const text = `Word Journey ${today}: ${start.toUpperCase()} → ${target.toUpperCase()} in ${userMoves} moves${suffix}\n${solvedPath.join(" → ")}`;
+    const text = `Wayword ${today}: ${start.toUpperCase()} → ${target.toUpperCase()} in ${userMoves} moves${suffix}\n${solvedPath.join(" → ")}`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);

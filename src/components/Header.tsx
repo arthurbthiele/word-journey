@@ -26,7 +26,7 @@ export const Header = ({ mode, setMode, onOpenHelp }: HeaderProps) => {
   return (
     <header className="wj-header">
       <h1 className="wj-header__brand">
-        word <span>journey</span>
+        way<span>word</span>
       </h1>
 
       <div className="wj-mode-toggle" role="tablist" aria-label="Game mode">
