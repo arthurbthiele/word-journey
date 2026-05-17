@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { computeDepths } from "../utilities/wordDepths";
 import { useLocalStorage } from "../utilities/useLocalStorage";
+import { legitimateWords } from "../dictionaryData/legitimate";
 
 export const GraphContext = React.createContext();
 
@@ -41,7 +42,14 @@ export const GraphProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const depths = useMemo(() => computeDepths(graph.nodes), [graph.nodes]);
+  // Depths are used by the free-play target picker to choose a word at the
+  // requested difficulty. Restrict the BFS to legitimate words so difficulty
+  // means "N moves through legitimate words from your graph" — consistent
+  // with how the qualifying chain is rendered.
+  const depths = useMemo(
+    () => computeDepths(graph.nodes, legitimateWords),
+    [graph.nodes]
+  );
 
   return (
     <GraphContext.Provider
