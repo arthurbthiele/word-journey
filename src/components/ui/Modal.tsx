@@ -40,7 +40,7 @@ export const Modal = ({ open, onClose, children, ariaLabel }: ModalProps) => {
         >
           ×
         </button>
-        {children}
+        <div className="wj-modal__content">{children}</div>
       </div>
     </div>
   );
