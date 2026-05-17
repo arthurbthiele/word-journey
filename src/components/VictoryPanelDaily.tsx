@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import confetti from "canvas-confetti";
 import { Button } from "./ui/Button";
 import { GraphContext } from "./GraphProvider";
 import { useLocalStorage } from "../utilities/useLocalStorage";
@@ -16,6 +17,29 @@ import {
 } from "../utilities/findPath";
 import { legitimateWords } from "../dictionaryData/legitimate";
 import type { DailyHistory } from "../utilities/dailyStats";
+
+const SHARE_URL = "https://arthurbthiele.github.io/wayword/";
+// Themed confetti colours — terracotta accent + cream paper + navy ink.
+const CONFETTI_COLOURS = [
+  "#c25a2a",
+  "#efd6c6",
+  "#d9d0bd",
+  "#1f2533",
+  "#f7f1e8",
+];
+
+const fireConfetti = (extraOomph: boolean) => {
+  const base = {
+    particleCount: extraOomph ? 140 : 90,
+    spread: extraOomph ? 90 : 70,
+    startVelocity: extraOomph ? 50 : 42,
+    colors: CONFETTI_COLOURS,
+    scalar: 0.9,
+    ticks: 220,
+  };
+  confetti({ ...base, origin: { x: 0.2, y: 0.7 }, angle: 70 });
+  confetti({ ...base, origin: { x: 0.8, y: 0.7 }, angle: 110 });
+};
 
 type VictoryPanelDailyProps = {
   start: string;
@@ -66,18 +90,29 @@ export const VictoryPanelDaily = ({
       (node: { id: string }) => node.id === target
     );
     if (!reached) return;
-    setSolvedDate(today);
-    // Prefer the chronological path the user took (via parents); fall back to
-    // shortest-path-through-graph for legacy graphs without parent tracking.
+
+    // Prefer the chronological path the user took (via parents); fall back
+    // to shortest-path-through-graph for legacy graphs without parent
+    // tracking.
     const userPath =
       findUserPath(graph.parents, start, target) ??
       findShortestPathInGraph(graph.nodes, graph.edges, start, target);
-    setSolvedPath(userPath);
     const optimal = findShortestPathInDictionary(
       start,
       target,
       legitimateWords
     );
+
+    // Celebratory burst on the moment of solve. Bigger burst if the user
+    // matched or beat the common-word optimal.
+    const userMovesNow = userPath ? userPath.length - 1 : 0;
+    const optimalMovesNow = optimal ? optimal.length - 1 : null;
+    fireConfetti(
+      optimalMovesNow !== null && userMovesNow <= optimalMovesNow
+    );
+
+    setSolvedDate(today);
+    setSolvedPath(userPath);
     setOptimalPath(optimal);
 
     // Record this solve in the history map (used by the stats modal and the
@@ -89,8 +124,8 @@ export const VictoryPanelDaily = ({
         [today]: {
           start,
           target,
-          userMoves: userPath ? userPath.length - 1 : 0,
-          optimalMoves: optimal ? optimal.length - 1 : null,
+          userMoves: userMovesNow,
+          optimalMoves: optimalMovesNow,
         },
       });
     }
@@ -99,7 +134,10 @@ export const VictoryPanelDaily = ({
 
   if (!solvedToday || !solvedPath || dismissed) return null;
 
-  const onCopy = async () => {
+  const canNativeShare =
+    typeof navigator !== "undefined" && typeof navigator.share === "function";
+
+  const onShare = async () => {
     const suffix = matchedOptimal
       ? " — common-word optimal!"
       : beatOptimal
@@ -107,7 +145,16 @@ export const VictoryPanelDaily = ({
         : optimalMoves !== null
           ? ` (common-word optimal: ${optimalMoves})`
           : "";
-    const text = `Wayword ${today}: ${start.toUpperCase()} → ${target.toUpperCase()} in ${userMoves} moves${suffix}\n${solvedPath.join(" → ")}`;
+    const text = `Wayword ${today}: ${start.toUpperCase()} → ${target.toUpperCase()} in ${userMoves} moves${suffix}\n${solvedPath.join(" → ")}\n\n${SHARE_URL}`;
+
+    if (canNativeShare) {
+      try {
+        await navigator.share({ title: "Wayword", text });
+        return;
+      } catch {
+        // User cancelled or share blocked — fall through to clipboard.
+      }
+    }
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -163,8 +210,8 @@ export const VictoryPanelDaily = ({
           )}
         </div>
         <div className="wj-victory__actions">
-          <Button variant="primary" size="small" onClick={onCopy}>
-            {copied ? "Copied!" : "Copy result"}
+          <Button variant="primary" size="small" onClick={onShare}>
+            {copied ? "Copied!" : canNativeShare ? "Share" : "Copy result"}
           </Button>
         </div>
       </div>
