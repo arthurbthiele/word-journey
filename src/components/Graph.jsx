@@ -25,6 +25,28 @@ export const Graph = () => {
     return () => observer.disconnect();
   }, [network]);
 
+  // When an input takes focus (i.e. the mobile keyboard is about to appear
+  // and the page will reflow / scroll), recenter the graph on the currently
+  // selected node so it stays visible regardless of what the browser does
+  // to the layout. Preserves the user's current zoom level.
+  useEffect(() => {
+    if (!network || !selectedWord) return;
+    const onFocusIn = (event) => {
+      if (!(event.target instanceof HTMLInputElement)) return;
+      // requestAnimationFrame lets the browser do its initial keyboard /
+      // scroll work first, so our focus animation lands on the post-reflow
+      // viewport rather than fighting it.
+      requestAnimationFrame(() => {
+        network.focus(selectedWord, {
+          scale: network.getScale(),
+          animation: { duration: 250 },
+        });
+      });
+    };
+    document.addEventListener("focusin", onFocusIn);
+    return () => document.removeEventListener("focusin", onFocusIn);
+  }, [network, selectedWord]);
+
   const events = {
     select: (event) => {
       setSelectedWord(event.nodes[0]);

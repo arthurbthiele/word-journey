@@ -25,7 +25,7 @@ export const StatusStripFreePlay = ({
 }: StatusStripFreePlayProps) => {
   const [difficulty, setDifficulty] = useLocalStorage<number>(
     "freeplay:difficulty",
-    1
+    3
   );
   const [score, setScore] = useLocalStorage<number>("freeplay:score", 0);
   const [lastScored, setLastScored] = useLocalStorage<string | null>(
