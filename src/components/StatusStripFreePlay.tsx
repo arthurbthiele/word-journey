@@ -40,10 +40,15 @@ export const StatusStripFreePlay = ({
   const depthsRef = useRef(depths);
   depthsRef.current = depths;
 
+  const isTrivialPlural = (word: string) =>
+    word.endsWith("s") && legitimateWords.has(word.slice(0, -1));
+
   const pickNewTarget = (level: number) => {
     const candidates = Object.keys(depthsRef.current).filter(
       (word) =>
-        depthsRef.current[word] === level && legitimateWords.has(word)
+        depthsRef.current[word] === level &&
+        legitimateWords.has(word) &&
+        !isTrivialPlural(word)
     );
     if (candidates.length === 0) {
       setTarget(null);

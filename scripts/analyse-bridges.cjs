@@ -167,8 +167,8 @@ for (const w of dictB) {
 candidates.sort((a, b) => b.expansion - a.expansion);
 
 console.log(`\nTotal bridge candidates: ${candidates.length}`);
-console.log("\nTop 30 by expansion potential:");
-for (const c of candidates.slice(0, 30)) {
+console.log("\nTop 80 by expansion potential:");
+for (const c of candidates.slice(0, 80)) {
   console.log(
     `  +${String(c.expansion).padStart(4)}  ${c.word.padEnd(12)}  → merges: ${c.mergedSamples.join(" | ")}`
   );

@@ -28,15 +28,8 @@ const dailyInitialGraph = {
 };
 
 const freeplayInitialGraph = {
-  nodes: [
-    { id: "a", label: "a" },
-    { id: "at", label: "at" },
-    { id: "art", label: "art" },
-  ],
-  edges: [
-    { from: "a", to: "at" },
-    { from: "at", to: "art" },
-  ],
+  nodes: [{ id: "a", label: "a" }],
+  edges: [] as { from: string; to: string }[],
 };
 
 const App = () => {
@@ -76,7 +69,7 @@ const App = () => {
         <GraphProvider
           keyPrefix="freeplay"
           initialGraph={freeplayInitialGraph}
-          initialSelectedWord="art"
+          initialSelectedWord="a"
         >
           <StatusStripFreePlay
             target={freePlayTarget}
