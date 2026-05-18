@@ -706,6 +706,11 @@ button {
   font-family: var(--font-serif);
   font-size: var(--text-xl);
 }
+.wj-explainer__step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
 .wj-explainer__node {
   background: var(--color-paper-2);
   border-radius: 999px;

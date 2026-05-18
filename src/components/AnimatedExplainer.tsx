@@ -43,22 +43,30 @@ export const AnimatedExplainer = () => {
   return (
     <div className="wj-explainer">
       <div className="wj-explainer__chain" key={stepIndex}>
-        {chain.map((word, index) => (
-          <React.Fragment key={`${index}-${word}`}>
-            {index > 0 && (
-              <span
-                className="wj-explainer__edge"
-                style={{ animationDelay: `${index * 0.08}s` }}
-              />
-            )}
+        {chain.map((word, index) => {
+          const node = (
             <span
               className={`wj-explainer__node ${index === activeIndex ? "wj-explainer__node--active" : ""}`}
               style={{ animationDelay: `${index * 0.08}s` }}
             >
               {word}
             </span>
-          </React.Fragment>
-        ))}
+          );
+          if (index === 0) {
+            return <React.Fragment key={`${index}-${word}`}>{node}</React.Fragment>;
+          }
+          // Group each arrow with its following node so flex-wrap never
+          // splits them across lines (orphaned dangling arrow looks bad).
+          return (
+            <span className="wj-explainer__step" key={`${index}-${word}`}>
+              <span
+                className="wj-explainer__edge"
+                style={{ animationDelay: `${index * 0.08}s` }}
+              />
+              {node}
+            </span>
+          );
+        })}
       </div>
       <div className="wj-explainer__caption">{caption}</div>
     </div>
