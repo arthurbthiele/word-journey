@@ -156,7 +156,15 @@ export const VictoryPanelDaily = ({
         : optimalMoves !== null
           ? ` (common-word optimal: ${optimalMoves})`
           : "";
-    const text = `Wayword #${getDayNumber(today)}: ${start.toUpperCase()} → ${target.toUpperCase()} in ${userMoves} moves${suffix}\n${solvedPath.join(" → ")}\n\n${SHARE_URL}`;
+    // Render the solve as a Wordle-style emoji block so the share text
+    // doesn't spoil the actual word chain. One green dot per word on the
+    // solve path; an arrow + one red dot per detour word (a node the user
+    // added that wasn't on their final path).
+    const pathDots = solvedPath.map(() => "🟢").join(" → ");
+    const detours = Math.max(0, graph.nodes.length - solvedPath.length);
+    const detourBlock =
+      detours > 0 ? `\n⬇\n${Array(detours).fill("🔴").join(" ")}` : "";
+    const text = `Wayword #${getDayNumber(today)}: ${start.toUpperCase()} → ${target.toUpperCase()} in ${userMoves} moves${suffix}\n${pathDots}${detourBlock}\n\n${SHARE_URL}`;
 
     if (useNativeShare) {
       try {
