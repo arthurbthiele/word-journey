@@ -29,7 +29,7 @@ export const Header = ({
       freeplay: {
         prefix: "freeplay:",
         label:
-          "Reset your Free play graph, score, and current target? Daily modes are not affected.",
+          "Reset your Free play graph, score, and current target? Your difficulty setting is kept. Daily modes are not affected.",
       },
       triple: {
         prefix: "triple:",
@@ -38,7 +38,20 @@ export const Header = ({
       },
     }[mode];
     if (window.confirm(resetConfig.label)) {
+      // Free play's difficulty is a long-running user preference, not
+      // session state — preserve it across resets.
+      const difficultyKey = "wordJourney:freeplay:difficulty";
+      const savedDifficulty =
+        mode === "freeplay" ? window.localStorage.getItem(difficultyKey) : null;
       clearLocalStorage(resetConfig.prefix);
+      if (savedDifficulty !== null) {
+        try {
+          window.localStorage.setItem(difficultyKey, savedDifficulty);
+        } catch {
+          // Private mode / quota — fall through; the difficulty will
+          // default on next mount.
+        }
+      }
       window.location.reload();
     }
   };
