@@ -71,14 +71,13 @@ export const VictoryPanelDaily = ({
     "daily:optimalPath",
     null
   );
-  const [dismissedDate, setDismissedDate] = useLocalStorage<string | null>(
-    "daily:victoryDismissedDate",
-    null
-  );
+  // Dismiss is session-only — refresh brings the panel back. Keeping the
+  // dismissal in localStorage made it impossible to retrieve your solve
+  // result once dismissed (raised by @official-kircheis on Tumblr).
+  const [dismissed, setDismissed] = useState(false);
   const [copiedKind, setCopiedKind] = useState<"score" | "path" | null>(null);
 
   const solvedToday = solvedDate === today;
-  const dismissed = dismissedDate === today;
   const userMoves = solvedPath ? solvedPath.length - 1 : 0;
   const optimalMoves = optimalPath ? optimalPath.length - 1 : null;
   const matchedOptimal =
@@ -237,7 +236,7 @@ export const VictoryPanelDaily = ({
       <button
         type="button"
         className="wj-victory__close"
-        onClick={() => setDismissedDate(today)}
+        onClick={() => setDismissed(true)}
         aria-label="Dismiss"
       >
         ×

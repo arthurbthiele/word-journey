@@ -81,10 +81,9 @@ export const VictoryPanelTriple = ({
     "triple:branchToT2",
     null
   );
-  const [dismissedDate, setDismissedDate] = useLocalStorage<string | null>(
-    "triple:victoryDismissedDate",
-    null
-  );
+  // Dismiss is session-only — refresh brings the panel back. See the
+  // matching change in VictoryPanelDaily.
+  const [dismissed, setDismissed] = useState(false);
   const [copiedKind, setCopiedKind] = useState<"score" | "path" | null>(null);
 
   // Optimal Steiner tree through the legitimate dictionary. Computed
@@ -98,7 +97,6 @@ export const VictoryPanelTriple = ({
   );
 
   const solvedToday = solvedDate === today;
-  const dismissed = dismissedDate === today;
   const matchedOptimal =
     userTreeSize !== null && userTreeSize === optimalEdges;
   const beatOptimal = userTreeSize !== null && userTreeSize < optimalEdges;
@@ -306,7 +304,7 @@ export const VictoryPanelTriple = ({
       <button
         type="button"
         className="wj-victory__close"
-        onClick={() => setDismissedDate(today)}
+        onClick={() => setDismissed(true)}
         aria-label="Dismiss"
       >
         ×
