@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { getWordGraph } from "../dictionaryData/wordGraphRef";
 import { wordsAreConnected } from "../utilities/wordAreConnected";
 import { GraphContext } from "./GraphProvider";
@@ -7,13 +7,35 @@ import { Input } from "./ui/Input";
 
 type InputBarProps = {
   targetReminder?: string | null;
+  // Defaults to true (the historical behaviour). App passes `false` when the
+  // InputBar is re-mounting after the user dismissed the victory panel — so
+  // the soft keyboard doesn't pop up over the graph the user wants to inspect.
+  autoFocus?: boolean;
 };
 
-export const InputBar = ({ targetReminder }: InputBarProps) => {
+export const InputBar = ({
+  targetReminder,
+  autoFocus = true,
+}: InputBarProps) => {
   const { selectedWord, setSelectedWord, graph, setGraph } =
     useContext(GraphContext);
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Focus the input whenever the selected word changes — i.e. when the
+  // user clicks a node in the graph (or types-to-jump to an existing word).
+  // Skip the very first render so the initial-mount focus is driven by the
+  // `autoFocus` prop and we don't override it (e.g. after dismissing the
+  // victory panel, where we deliberately don't auto-focus).
+  // Requested by @normalhorse on Tumblr.
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    inputRef.current?.focus();
+  }, [selectedWord]);
 
   const trimmed = value.trim().toLowerCase();
   const wordInGraph =
@@ -122,7 +144,7 @@ export const InputBar = ({ targetReminder }: InputBarProps) => {
       <div className="wj-inputbar__field">
         <Input
           ref={inputRef}
-          autoFocus
+          autoFocus={autoFocus}
           placeholder={`Type a word one edit from '${selectedWord}'…`}
           value={value}
           onChange={(event) => setValue(event.target.value.toLowerCase())}

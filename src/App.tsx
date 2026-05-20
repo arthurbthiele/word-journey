@@ -261,7 +261,10 @@ const App = () => {
             setSolvedDate={setDailySolvedDate}
           />
           {!hideInputForDaily && (
-            <InputBar targetReminder={dailyPair.target} />
+            <InputBar
+              targetReminder={dailyPair.target}
+              autoFocus={!dailySolved}
+            />
           )}
         </GraphProvider>
       ) : mode === "triple" ? (
@@ -302,6 +305,7 @@ const App = () => {
           {!hideInputForTriple && (
             <InputBar
               targetReminder={`${dailyTriple.t1} + ${dailyTriple.t2}`}
+              autoFocus={!tripleSolved}
             />
           )}
         </GraphProvider>
