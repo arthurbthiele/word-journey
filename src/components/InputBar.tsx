@@ -28,12 +28,19 @@ export const InputBar = ({
   // `autoFocus` prop and we don't override it (e.g. after dismissing the
   // victory panel, where we deliberately don't auto-focus).
   // Requested by @normalhorse on Tumblr.
+  //
+  // Desktop-only on purpose: on mobile (coarse pointer), iOS Safari blurs
+  // the input on any tap outside it and won't reopen the keyboard from a
+  // programmatic focus() that's run outside the original gesture. Refocusing
+  // there would leave the user with a "cursor back in input, no keyboard"
+  // state that reads as broken. Let iOS's behaviour win on mobile.
   const isFirstRender = useRef(true);
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
+    if (window.matchMedia?.("(pointer: coarse)").matches) return;
     inputRef.current?.focus();
   }, [selectedWord]);
 
