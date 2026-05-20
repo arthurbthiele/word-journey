@@ -14,23 +14,10 @@ is mobile. Higher priority than the regular polish / feature queue.
   several players appear unaware that removing a letter is allowed.
   Update the explainer animation (or copy) to walk through all three
   operations equally.
-- **Mobile: keyboard stays up after solving daily / triple.** When the
-  victory panel appears, the input retains focus and the keyboard
-  eats half the screen — the share buttons sit behind it. Should blur
-  the input on solve so the keyboard retracts.
-- **Re-opening the share / victory panel isn't discoverable.** After
-  the dismiss-share fix, the only way back is a page refresh.
-  `@official-kircheis` hit this on Tumblr; the "refresh to recover"
-  workaround was Arthur's reply. Want a real button — probably a
-  "Show solution / share" entry-point in the header or status strip
-  once a mode is solved for the day.
 - **Mobile: solutions row side-scrolls alone.** When the path or
   optimal-path overflows the viewport, only the row scrolls — the
   surrounding container stays put. Should scroll as a unit so the
   whole solutions box travels with the path.
-- **Mobile: Share + Share-with-path buttons aren't the same height.**
-  Small visual inconsistency. Probably an inline-vs-flex height
-  resolution issue.
 - **Graph: double-tap zooms out too far.** vis-network's default
   fit-to-content seems to overshoot. Pin the zoom level the recentre
   lands on.
@@ -77,10 +64,6 @@ is mobile. Higher priority than the regular polish / feature queue.
   finds no candidates at the requested difficulty, optionally degrade
   to the next-lower difficulty (with a console note) instead of
   setting target to null.
-- **Auto-focus input after clicking a node.** `@normalhorse` on
-  Tumblr: "once someone clicks on a node to go back, when they type
-  on the keyboard put the focus back in the text entry box." Simple
-  ref refocus in the Graph node-click handler.
 
 ## Tumblr feature requests (parking lot)
 
@@ -215,3 +198,12 @@ Kept here briefly so we can see how the queue's moving.
 - Mobile overflow fix (grid `minmax(0, 1fr)`)
 - Credits + SCOWL attribution: in Help modal + `/attributions.txt`.
   Header `?` moved to far right. (2026-05-20.)
+- Mobile post-solve UX: keyboard retracts on solve, equal-height
+  share buttons, InputBar hides while the victory panel is visible,
+  input doesn't re-focus on dismiss. (2026-05-20.)
+- "Show result" button in the status strip — discoverable path back
+  to a dismissed victory panel. (2026-05-20.)
+- × clears the wrapped title text on the victory panel via
+  padding-right. (2026-05-20.)
+- Click any node in the graph → input focuses (`@normalhorse`
+  Tumblr request). (2026-05-20.)
